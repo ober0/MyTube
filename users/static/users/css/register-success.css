@@ -1,0 +1,16 @@
+body{
+    background: #333333;
+}
+
+.container{
+    color: white;
+    text-align: center;
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 10px;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+    top:100px;
+    width: fit-content;
+}

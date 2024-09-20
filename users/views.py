@@ -38,7 +38,7 @@ def register(request):
         if not user:
             hash = secrets.token_hex(32)
             r.set(hash, email, ex=300)
-            url = f'{settings.URL}/users/register/verified?hash={hash}'
+            url = f'{settings.URL}users/register/verified?hash={hash}'
             users = [email]
             message = f'''Для продолжения регистрации перейдите по ссылке:
             {url}
@@ -46,7 +46,7 @@ def register(request):
 
             send_register_email.delay(message, users)
 
-            return redirect(f"{reverse('email-success')}?hash={hash}")
+            return redirect(f"{reverse('email-success')}?email={email}")
         else:
             return JsonResponse({
                 'success': False,
@@ -56,5 +56,13 @@ def password_reset(request):
     return HttpResponse(f'<h1>success</h1>')
 
 def email_success(request):
+    email = request.GET.get('email')
+    return render(request, 'users/register/step1-success.html', {'email': email})
 
-    return HttpResponse()
+def register_verified(request):
+    hash = request.GET.get('hash')
+    email = r.get(hash)
+    if email:
+        return HttpResponse('1')
+    else:
+        return HttpResponse('0')
