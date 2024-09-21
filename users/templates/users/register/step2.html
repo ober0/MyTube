@@ -3,10 +3,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>MyTube - Вход</title>
+	<title>MyTube - Регистрация</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
+<!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="{% static 'users/images/icons/favicon.ico' %}">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'users/vendor/bootstrap/css/bootstrap.min.css' %}">
@@ -16,13 +16,13 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'users/fonts/iconic/css/material-design-iconic-font.min.css' %}">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'users/vendor/animate/animate.css' %}">
-<!--===============================================================================================-->	
+<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'users/vendor/css-hamburgers/hamburgers.min.css' %}">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'users/vendor/animsition/css/animsition.min.css' %}">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'users/vendor/select2/select2.min.css' %}">
-<!--===============================================================================================-->	
+<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'users/vendor/daterangepicker/daterangepicker.css' %}">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'users/css/util.css' %}">
@@ -33,40 +33,58 @@
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('{% static 'users/images/bg-01.jpg' %}');">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-				<form class="login100-form validate-form" action="{% url 'login' %}" method="post">
+				<form class="login100-form validate-form" action="{% url 'register-verified' %}" method="post">
                     {% csrf_token %}
 					<span class="login100-form-title p-b-49">
-						Вход
+						Регистрация
 					</span>
 
-					<div class="wrap-input100 validate-input m-b-23" data-validate = "Поле обязательно">
+                    <input type="text" name="email" value="{{ email }}">
+
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Поле обязательно">
 						<span class="label-input100"></span>
-                        {{form.username}}
+                        <input placeholder="Имя" type="" name="first_name" id="first_name" class="input100">
 						<span class="focus-input100" data-symbol="&#xf206;"></span>
 					</div>
 
-					<div class="wrap-input100 validate-input" data-validate="Поле обязательно">
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Поле обязательно">
 						<span class="label-input100"></span>
-                        {{form.password}}
+                        <input placeholder="Фамилия" type="" name="last_name" id="last_name" class="input100">
+						<span class="focus-input100" data-symbol="&#xf206;"></span>
+					</div>
+
+
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Поле обязательно">
+						<span class="label-input100"></span>
+                        <input placeholder="Логин" type="" name="login" id="login" class="input100">
+						<span class="focus-input100" data-symbol="&#xf205;"></span>
+					</div>
+
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Поле обязательно">
+						<span class="label-input100"></span>
+                        <input placeholder="Пароль" type="" name="password" id="password" class="input100">
 						<span class="focus-input100" data-symbol="&#xf190;"></span>
 					</div>
-					
-					<div class="text-right p-t-8 p-b-31">
-						<a href="{% url 'password-reset' %}">
-							Забыли пароль?
-						</a>
+
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Поле обязательно">
+						<span class="label-input100"></span>
+                        <input placeholder="Повторите пароль" type="" name="repeat_password" id="repeat_password" class="input100">
+						<span class="focus-input100" data-symbol="&#xf191;"></span>
 					</div>
+
+                    {% if error %}
+                    <p style="color: red; text-align: center">{{ error }}</p>
+                    {% endif %}
 					<div class="container-login100-form-btn">
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
 							<button class="login100-form-btn">
-								Войти
+								Зарегистрироваться
 							</button>
 						</div>
 					</div>
-
                     <div class="register-btn">
-                        Регистрация
+                        Войти
                     </div>
 
 					<div class="txt1 text-center p-t-54 p-b-20">
@@ -94,10 +112,10 @@
 			</div>
 		</div>
 	</div>
-	
+
 
 	<div id="dropDownSelect1"></div>
-	
+
 <!--===============================================================================================-->
 	<script src="{% static 'users/vendor/jquery/jquery-3.2.1.min.js' %}"></script>
 <!--===============================================================================================-->
@@ -117,7 +135,7 @@
 
     <script>
         document.querySelector('.register-btn').addEventListener('click', function () {
-            window.location.href = "{% url 'register' %}"
+            window.location.href = "{% url 'login' %}"
         })
     </script>
 </body>

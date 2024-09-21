@@ -43,7 +43,7 @@ def register(request):
             message = f'''Для продолжения регистрации перейдите по ссылке:
             {url}
             '''
-
+            print(message)
             send_register_email.delay(message, users)
 
             return redirect(f"{reverse('email-success')}?email={email}")
@@ -60,9 +60,26 @@ def email_success(request):
     return render(request, 'users/register/step1-success.html', {'email': email})
 
 def register_verified(request):
-    hash = request.GET.get('hash')
-    email = r.get(hash)
-    if email:
-        return HttpResponse('1')
-    else:
-        return HttpResponse('0')
+    if request.method == 'GET':
+        hash = request.GET.get('hash')
+        email = r.get(hash)
+        if not email:
+            return render(request, 'users/register/step2.html', {'email': email})
+        else:
+            return HttpResponse('Отказано в доступе')
+    elif request.method == 'POST':
+        password = request.POST.get('password')
+        repeat_password = request.POST.get('repeat_password')
+        email = request.POST.get('email')
+        if password != repeat_password:
+           return render(request, 'users/register/step2.html', {'email': email, 'error': 'Пароль должен быть одинаковый в обоих полях'})
+        username = request.POST.get('login')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        if email and username and first_name and last_name and password:
+           user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
+           user.save()
+           auth_login(request, user)
+           return redirect('home')
+        print(email, username, first_name, last_name, password, repeat_password)
+        return render(request, 'users/register/step2.html', {'email': email})
