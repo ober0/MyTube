@@ -13,3 +13,13 @@ def send_register_email(message, recipient_list):
         settings.EMAIL_HOST_USER,
         recipient_list
     )
+
+
+@shared_task
+def send_reset_password_email(message, recipient_list):
+    send_mail(
+        'Сброс пароля на MyTube',
+        f'{str(message)}\nЕсли вы не запрашивали востановление проигнорируйте это письмо',
+        settings.EMAIL_HOST_USER,
+        recipient_list
+    )

@@ -7,7 +7,7 @@ from .models import CustomUser as User
 from django.conf import settings
 import secrets
 from .redis import r
-from .tasks import send_register_email
+from .tasks import send_register_email, send_reset_password_email
 from django.core.mail import send_mail
 
 
@@ -43,18 +43,38 @@ def register(request):
             message = f'''Для продолжения регистрации перейдите по ссылке:
             {url}
             '''
-            print(message)
             send_register_email.delay(message, users)
 
             return redirect(f"{reverse('email-success')}?email={email}")
         else:
-            return JsonResponse({
-                'success': False,
-                'error': 'Пользователь с этим email-ом уже существует. '
-            })
+            return render(request, 'users/register/step1.html', {'error': 'Аккаунт с такой почтой уже существует'})
 def password_reset(request):
-    return HttpResponse(f'<h1>success</h1>')
+    if request.method == 'GET':
+        return render(request, 'users/reset-password.html')
+    elif request.method == 'POST':
+        username = request.POST['login']
+        email = request.POST['email']
+        user = User.objects.filter(email=email).filter(username=username).first()
+        if not user:
+            return render(request, 'users/reset-password.html', {'error': 'Аккаунт не найден'})
+        hash = secrets.token_hex(32)
+        r.set(f'{hash}-reset-password', user.id, ex=300)
+        print(f'{hash}-reset-password')
+        url = f'{settings.URL}users/password-reset/verified?hash={hash}'
+        users = [email]
+        message = f'''Для сброса пароля перейдите по ссылке:
+        {url}'''
+        send_reset_password_email(message, users)
+        return render(request, 'users/reset-password.html', {'success': f'Ссылка для продолжения отправлена на {email}'})
 
+def password_reset_verified(request):
+    hash = request.GET.get('hash')
+    user_id = r.get(f'{hash}-reset-password')
+    user = User.objects.get(id=user_id)
+    if user:
+        return HttpResponse('Success')
+    else:
+        return HttpResponse('Отказано')
 def email_success(request):
     email = request.GET.get('email')
     return render(request, 'users/register/step1-success.html', {'email': email})
@@ -63,7 +83,7 @@ def register_verified(request):
     if request.method == 'GET':
         hash = request.GET.get('hash')
         email = r.get(hash)
-        if not email:
+        if email:
             return render(request, 'users/register/step2.html', {'email': email})
         else:
             return HttpResponse('Отказано в доступе')
