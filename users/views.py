@@ -58,7 +58,7 @@ def password_reset(request):
         if not user:
             return render(request, 'users/reset-password.html', {'error': 'Аккаунт не найден'})
         hash = secrets.token_hex(32)
-        r.set(f'{hash}-reset-password', user.id, ex=300)
+        r.set(f'{hash}-reset-password', user.id, ex=420)
         print(f'{hash}-reset-password')
         url = f'{settings.URL}users/password-reset/verified?hash={hash}'
         users = [email]
@@ -68,11 +68,32 @@ def password_reset(request):
         return render(request, 'users/reset-password.html', {'success': f'Ссылка для продолжения отправлена на {email}'})
 
 def password_reset_verified(request):
-    hash = request.GET.get('hash')
-    user_id = r.get(f'{hash}-reset-password')
-    user = User.objects.get(id=user_id)
-    if user:
-        return HttpResponse('Success')
+    if request.method == 'GET':
+        hash = request.GET.get('hash')
+        if r.get(f'{hash}-reset-password'):
+            user_id = r.get(f'{hash}-reset-password')
+        else:
+            return HttpResponse('Отказано')
+        user = User.objects.get(id=user_id)
+        if user:
+            return render(request, 'users/reset-password-step2.html',{'hash': hash})
+    elif request.method == "POST":
+        hash = request.POST.get('hash')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+
+        if password1 != password2:
+            return render(request, 'users/reset-password-step2.html', {'error':'Пароли не совпадают'})
+        user_id = r.get(f'{hash}-reset-password')
+        if not user_id:
+            return render(request, 'users/reset-password-step2.html', {'error': 'Время сессии истекло, попробуйте снова'})
+        user = User.objects.filter(id=user_id).first()
+        user.set_password(password1)
+        user.save()
+        r.delete(f'{hash}-reset-password')
+        return redirect('login')
+
+
     else:
         return HttpResponse('Отказано')
 def email_success(request):
