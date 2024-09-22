@@ -124,3 +124,8 @@ def register_verified(request):
            return redirect('home')
         print(email, username, first_name, last_name, password, repeat_password)
         return render(request, 'users/register/step2.html', {'email': email})
+
+
+def exit(request):
+    logout(request)
+    return redirect('home')
