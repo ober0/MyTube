@@ -8,7 +8,6 @@ from django.conf import settings
 import secrets
 from .redis import r
 from .tasks import send_register_email, send_reset_password_email
-from django.core.mail import send_mail
 
 
 def login(request):
@@ -129,3 +128,14 @@ def register_verified(request):
 def exit(request):
     logout(request)
     return redirect('home')
+
+
+def profile(request, id):
+    user = User.objects.filter(id=id).first()
+    me = request.user
+    if user:
+        self = True if request.user.id == id else False
+
+        return render(request, 'users/profile.html', {'user': user, 'self': self, 'me':me})
+    else:
+        return HttpResponse('Страница не найдена')

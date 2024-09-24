@@ -1,0 +1,20 @@
+{% load static %}
+
+{% block header %}
+    <link rel="stylesheet" href="{% static 'users/css/header.css' %}">
+    <div class="header">
+        <div class="header-container">
+        <a href="/" class="title">MyTube</a>
+    </div>
+    <div class="header-search">
+        <form action="{% url 'search-main' %}" method="get" id="search-form">
+            <input class="search-input" type="text" name="par" id="search-input">
+        </form>
+
+    </div>
+    <div class="header-profile-img">
+        <img onclick="open_profile({{ me.id }})" class="profile-img" src="{% static me.avatar_path %}" alt="">
+    </div>
+    </div>
+    <script src="{% static 'users/js/header.js' %}"></script>
+{% endblock %}

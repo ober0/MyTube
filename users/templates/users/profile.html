@@ -1,0 +1,21 @@
+{% load static %}
+{% include 'users/header.html' %}
+{% include 'users/menu.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user.username }}</title>
+    <link rel="stylesheet" href="{% static 'users/css/profile.css' %}">
+</head>
+<body>
+    <header>
+        {% block header %}
+        {% endblock %}
+    </header>
+    <div class="content">
+        {% block menu %}
+        {% endblock %}
+    </div>
+</body>
+</html>
